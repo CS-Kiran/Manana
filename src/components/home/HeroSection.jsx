@@ -1,4 +1,4 @@
-'use client'
+"use client";
 export default function HeroSection() {
   return (
     <div className="relative flex flex-col items-center justify-center h-screen px-4 md:px-10 overflow-hidden">
@@ -32,15 +32,18 @@ export default function HeroSection() {
           </button>
         </div>
 
-        <div className="w-full md:w-1/2 h-[30rem] flex justify-end items-center">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full max-w-2xl rounded-2xl shadow-2xl opacity-90"
-            src="/mindful.mp4"
-          />
+        <div className="w-full md:w-1/2 h-[30rem] flex justify-end items-center relative group">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent opacity-0 ease-in-out"></div>
+          <div className="w-full max-w-2xl rounded-2xl overflow-hidden transform transition-all duration-300 ease-in-out group-hover:scale-[1.02] group-hover:shadow-lg">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-300 ease-in-out"
+              src="/mindful.mp4"
+            />
+          </div>
         </div>
       </section>
     </div>

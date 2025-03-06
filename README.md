@@ -1,6 +1,6 @@
 # Manana (मनन)
 
-🚀 **Manana** (Sanskrit: मनन) - A mindful task tracker and diary app, designed for simplicity and productivity. Future AI integrations coming soon!
+🚀 **Manana** (मनन) - A mindful task tracker and diary app, designed for simplicity and productivity. Future AI integrations coming soon!
 
 ## 🛠 Tech Stack
 - **Framework:** Next.js 15
@@ -23,13 +23,14 @@ git clone https://github.com/CS-Kiran/Manana.git
 cd manana
 
 # Install dependencies
-yarn install  # or npm install
+npm install  # or yarn install
 
 # Set up environment variables
-cp .env.example .env   # Add your MongoDB Atlas URI and other secrets
+MONGODB_URI = "mongodb+srv://[username]:[password]@[cluster-name].uern4.mongodb.net/"  # Add your MongoDB Atlas URL
+JWT_SECRET = "[jwt_secret_key]"     # Add your jwt secret key
 
 # Run the app
-yarn dev  # or npm run dev
+npm run dev  # or yarn dev
 ```
 
 ## 🚀 Deployment
