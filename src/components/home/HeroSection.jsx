@@ -1,4 +1,7 @@
 "use client";
+
+import Link from "next/link";
+
 export default function HeroSection() {
   return (
     <div className="relative flex flex-col items-center justify-center h-screen px-4 md:px-10 overflow-hidden">
@@ -22,14 +25,13 @@ export default function HeroSection() {
             productivity.
           </p>
 
-          <button
-            className="rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl w-fit px-8 py-2 text-lg"
-            onClick={() => {
-              console.log("Get Started clicked");
-            }}
-          >
-            Get Started
-          </button>
+          <Link href="/login">
+            <button
+              className="rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl w-fit px-8 py-2 text-lg"
+            >
+              Get Started
+            </button>
+          </Link>
         </div>
 
         <div className="w-full md:w-1/2 h-[30rem] flex justify-end items-center relative group">
