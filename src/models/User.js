@@ -14,9 +14,7 @@ const userSchema = new mongoose.Schema({
       message: props => `${props.value} is not a valid email domain!`
     }
   },
-  password: { type: String },
-  googleId: { type: String },
-  verified: { type: Boolean, default: false }
+  password: { type: String, required: true }
 });
 
 userSchema.pre('save', async function(next) {

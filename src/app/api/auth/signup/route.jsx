@@ -11,7 +11,6 @@ export async function POST(request) {
     const allowedDomains = ['gmail.com', 'outlook.com', 'yahoo.com'];
     const domain = email.split('@')[1];
 
-    // Validate email domain
     if (!allowedDomains.includes(domain)) {
       return NextResponse.json(
         { error: 'Invalid email domain' },
@@ -19,7 +18,6 @@ export async function POST(request) {
       );
     }
 
-    // Check for existing user
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return NextResponse.json(
@@ -28,10 +26,7 @@ export async function POST(request) {
       );
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-    
-    // Create user
     const user = await User.create({
       name,
       email,
@@ -39,7 +34,7 @@ export async function POST(request) {
     });
 
     return NextResponse.json(
-      { success: true },
+      { success: true, user: { id: user._id, name: user.name, email: user.email } },
       { status: 201 }
     );
 

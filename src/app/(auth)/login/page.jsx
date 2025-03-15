@@ -29,14 +29,35 @@ export default function Login() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    router.push("/");
-    setIsLoading(false);
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.toLowerCase(), password }),
+      });
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Server returned unexpected response");
+      }
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+
+      // router.push('/dashboard');
+    } catch (error) {
+      setErrors({ server: error.message });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -56,7 +77,14 @@ export default function Login() {
           </CardHeader>
           
           <CardContent className="space-y-4">
-            <form className="space-y-4" onSubmit={handleSubmit}>
+            <form className="space-y-4" onSubmit={handleLogin}>
+              {errors.server && (
+                <p className="text-destructive text-sm flex items-center gap-1">
+                  <AlertCircle className="h-4 w-4" />
+                  {errors.server}
+                </p>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
