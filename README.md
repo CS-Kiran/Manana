@@ -20,14 +20,15 @@
 ```bash
 # Clone the repository
 git clone https://github.com/CS-Kiran/Manana.git
-cd manana
+cd Manana
 
 # Install dependencies
-npm install  # or yarn install
+pnpm install  # or yarn install
 
 # Set up environment variables
-MONGODB_URI = "mongodb+srv://[username]:[password]@[cluster-name].uern4.mongodb.net/"  # Add your MongoDB Atlas URL
+MONGODB_URI = "mongodb+srv://[username]:[password]@[cluster-name].uern4.mongodb.net/[database-name]?retryWrites=true&w=majority"  # Add your MongoDB Atlas URL
 JWT_SECRET = "[jwt_secret_key]"     # Add your jwt secret key
+NEXTAUTH_URL = "[localhost-url]"    # eg : http://localhost:3000
 
 # Run the app
 npm run dev  # or yarn dev
