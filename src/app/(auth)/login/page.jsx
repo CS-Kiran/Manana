@@ -32,7 +32,7 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-
+  
     setIsLoading(true);
     try {
       const response = await fetch('/api/auth/login', {
@@ -40,19 +40,21 @@ export default function Login() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.toLowerCase(), password }),
       });
-
+  
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         throw new Error("Server returned unexpected response");
       }
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
         throw new Error(data.error || 'Login failed');
       }
-
-      // router.push('/dashboard');
+  
+      localStorage.setItem('user', JSON.stringify(data.user));
+      
+      router.push('/dashboard');
     } catch (error) {
       setErrors({ server: error.message });
     } finally {
