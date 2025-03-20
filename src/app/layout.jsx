@@ -1,4 +1,4 @@
-import { ThemeProvider } from "@/context/theme-provider";
+import { Providers } from "@/context/provider";
 import "./globals.css";
 
 export const metadata = {
@@ -10,9 +10,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <ThemeProvider>
+        <Providers>
           {children}
-        </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );

@@ -15,6 +15,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AlertCircle, Loader2 } from "lucide-react";
+import { signIn } from "next-auth/react";
 
 export default function Signup() {
   const router = useRouter();
@@ -26,6 +27,7 @@ export default function Signup() {
   const [isLoading, setIsLoading] = useState(false);
 
   const allowedDomains = ["gmail.com", "outlook.com", "yahoo.com"];
+  const domain = email.split("@")[1]?.toLowerCase();
 
   const validate = () => {
     const newErrors = {};
@@ -39,7 +41,7 @@ export default function Signup() {
       newErrors.email = "Invalid email format";
     } else if (
       emailParts.length < 2 ||
-      !allowedDomains.includes(emailParts[1])
+      !domain.includes(emailParts[1])
     ) {
       newErrors.email = "Only Gmail, Outlook & Yahoo emails allowed";
     }
@@ -61,47 +63,32 @@ export default function Signup() {
   const handleEmailSignup = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-  
+
     setIsLoading(true);
     try {
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
       });
-  
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        throw new Error('Server returned unexpected response');
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Server returned unexpected response");
       }
-  
+
       const data = await response.json();
-      
+
       if (!response.ok) {
-        throw new Error(data.error || 'Signup failed');
+        throw new Error(data.error || "Signup failed");
       }
-  
-      router.push('/login ');
+
+      router.push("/login ");
     } catch (error) {
       setErrors({ server: error.message });
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleGoogleSignup = () => {
-    const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
-    authUrl.searchParams.append("client_id", process.env.GOOGLE_CLIENT_ID);
-    authUrl.searchParams.append(
-      "redirect_url",
-      `${window.location.origin}/api/auth/google/callback`
-    );
-    authUrl.searchParams.append("response_type", "code");
-    authUrl.searchParams.append("scope", "email profile");
-    authUrl.searchParams.append("access_type", "offline");
-    authUrl.searchParams.append("prompt", "consent");
-
-    window.location.href = authUrl.href;
   };
 
   return (
@@ -245,7 +232,7 @@ export default function Signup() {
             <Button
               variant="outline"
               className="w-full hover:bg-accent/50 hover:scale-[1.01]"
-              onClick={handleGoogleSignup}
+              onClick={() => signIn("google")}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

@@ -10,19 +10,17 @@ import { DASHBOARD_LINKS } from "@/config/dashboard-links";
 import Theme from "@/components/ui/theme";
 import { useState } from "react";
 import { LogOut, Menu } from "lucide-react";
-import { useAuth } from "@/context/auth-context";
+import { useSession, signOut } from "next-auth/react";
 
 export function Sidebar() {
-  const { user, setUser } = useAuth();
+  const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(true);
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-      localStorage.removeItem('user');
-      setUser(null);
+      await signOut({ redirect: false });
       router.push('/login');
     } catch (error) {
       console.error('Logout failed:', error);
@@ -60,15 +58,15 @@ export function Sidebar() {
           <div className="flex items-center gap-3 pb-4 mb-4 border-b border-border/30">
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-foreground flex items-center justify-center border-2 border-primary/50">
               <span className="font-medium text-primary-foreground">
-                {user?.name?.charAt(0).toUpperCase() || "G"}
+                {session?.user?.name?.charAt(0).toUpperCase() || "G"}
               </span>
             </div>
             <div className="flex-1">
               <h3 className="font-semibold text-sm truncate">
-                {user?.name || "Guest User"}
+                {session?.user?.name || "Guest User"}
               </h3>
               <p className="text-xs text-muted-foreground truncate">
-                {user?.email || "No email available"}
+                {session?.user?.email || "No email available"}
               </p>
             </div>
             <Theme className="ml-2" />
