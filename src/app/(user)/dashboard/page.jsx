@@ -2,14 +2,13 @@
 
 import { motion } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sidebar } from "@/components/dashboard/Sidebar";
+import { Sidebar } from "@/components/home/Sidebar";
 
 export default function Dashboard() {
   return (
     <div className="flex h-screen bg-gradient-to-br from-background to-accent/5">
       <Sidebar />
 
-      {/* Main Content Area */}
       <ScrollArea className="flex-1">
         <motion.main
           initial={{ opacity: 0, y: 20 }}
