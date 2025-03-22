@@ -44,8 +44,8 @@ export default function Login() {
     try {
       const result = await signIn("credentials", {
         redirect: false,
-        email: email.toLowerCase(),
-        password,
+        email: email.trim().toLowerCase(),
+        password: password.trim(),
         callbackUrl: "/dashboard",
       });
 

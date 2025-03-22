@@ -41,7 +41,7 @@ export default function Signup() {
       newErrors.email = "Invalid email format";
     } else if (
       emailParts.length < 2 ||
-      !domain.includes(emailParts[1])
+      !allowedDomains.includes(emailParts[1]?.toLowerCase())
     ) {
       newErrors.email = "Only Gmail, Outlook & Yahoo emails allowed";
     }
@@ -69,7 +69,11 @@ export default function Signup() {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim().toLowerCase(),
+          password: password.trim(),
+        }),
       });
 
       const contentType = response.headers.get("content-type");
@@ -83,7 +87,7 @@ export default function Signup() {
         throw new Error(data.error || "Signup failed");
       }
 
-      router.push("/login ");
+      router.push("/login");
     } catch (error) {
       setErrors({ server: error.message });
     } finally {

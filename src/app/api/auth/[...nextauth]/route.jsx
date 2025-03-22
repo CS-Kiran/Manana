@@ -3,7 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import User from "@/models/User";
 import connectDB from "@/lib/db";
-import bcrypt from "bcrypt";
+import bcrypt from "bcrypt"; 
 
 connectDB();
 
@@ -21,24 +21,34 @@ export const authOptions = {
       },
       async authorize(credentials) {
         try {
-          const email = credentials.email.toLowerCase();
-          const password = credentials.password;
-          const user = await User.findOne({
-            email: { $regex: new RegExp(`^${email}$`, "i") },
-          });
+          const email = credentials.email.trim().toLowerCase();
+          const password = credentials.password.trim();
+
+          const user = await User.findOne({ email }).lean();
 
           if (!user) {
             throw new Error("User not found");
           }
 
           if (user.provider === "credentials") {
-            const passwordMatch = await bcrypt.compare(password, user.password);
-            if (!passwordMatch) {
+            if (!user.password) {
+              throw new Error("Password not set for credentials user");
+            }
+
+            const isPasswordValid = await bcrypt.compare(
+              password,
+              user.password
+            );
+
+            if (!isPasswordValid) {
               throw new Error("Invalid password");
             }
+          } else if (user.provider === "google") {
+            throw new Error("Please sign in with Google");
           }
+
           return {
-            id: user._id,
+            id: user._id.toString(),
             name: user.name,
             email: user.email,
             provider: user.provider,
@@ -55,10 +65,11 @@ export const authOptions = {
       if (account.provider === "google") {
         const { email } = user;
 
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findOne({ email }).exec();
         if (existingUser) {
           if (existingUser.provider !== "google") {
-            throw new Error("Email exists with different login method");
+            // Return false to redirect to error page with suitable message
+            return false;
           }
           user.id = existingUser._id;
           return true;
