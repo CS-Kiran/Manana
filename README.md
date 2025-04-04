@@ -37,11 +37,11 @@ pnpm install  # or yarn install
 
 # Nurture with environment variables (.env or .env.local)
 MONGODB_URL = "mongodb+srv://[username]:[password]@[cluster-name].mongodb.net/[database-name]?retryWrites=true&w=majority"
+GOOGLE_CLIENT_ID = "[your_google_client_id]"
+GOOGLE_CLIENT_SECRET = "[your_google_client_secret]"
 JWT_SECRET = "[your_jwt_secret]"
 NEXTAUTH_URL = "[your_localhost_url]"  # e.g., http://localhost:3000
 NEXTAUTH_SECRET = "[your_nextauth_secret]"
-GOOGLE_CLIENT_ID = "[your_google_client_id]"
-GOOGLE_CLIENT_SECRET = "[your_google_client_secret]"
 
 # Watch it bloom
 npm run dev  # or yarn dev
