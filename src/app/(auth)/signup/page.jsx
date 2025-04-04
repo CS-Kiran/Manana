@@ -97,13 +97,19 @@ export default function Signup() {
 
   return (
     <>
-      <div className="fixed top-2 right-4">
+      <div className="fixed top-4 right-6 z-10">
         <Theme />
       </div>
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-secondary/20 to-accent/30 p-4">
-        <Card className="w-full max-w-md shadow-2xl rounded-xl bg-card/90 backdrop-blur-lg border-border/50 hover:shadow-3xl transition-shadow duration-300">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-center text-3xl font-bold bg-gradient-to-r from-primary to-foreground bg-clip-text text-transparent">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-secondary/5 to-primary/10 p-4 relative overflow-hidden">
+        {/* Decorative blobs */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-secondary/10 rounded-full filter blur-3xl opacity-50 animate-blob"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary/10 rounded-full filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+        
+        <Card className="w-full max-w-md shadow-2xl rounded-2xl bg-card/70 backdrop-blur-xl border border-white/10 dark:border-white/5 hover:shadow-secondary/10 transition-all duration-500">
+          <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 to-primary/10 rounded-2xl opacity-30"></div>
+          
+          <CardHeader className="space-y-2 relative">
+            <CardTitle className="text-center text-3xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent animate-hue">
               Create Account
             </CardTitle>
             <p className="text-center text-sm text-muted-foreground">
@@ -111,32 +117,34 @@ export default function Signup() {
             </p>
           </CardHeader>
 
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-5 relative">
             <form className="space-y-4" onSubmit={handleEmailSignup}>
               {errors.server && (
-                <p className="text-destructive text-sm flex items-center gap-1 mb-4">
+                <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm flex items-center gap-2">
                   <AlertCircle className="h-4 w-4" />
                   {errors.server}
-                </p>
+                </div>
               )}
 
               {/* Name Field */}
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="name" className="text-foreground/80 font-medium">
+                  Full Name
+                </Label>
                 <Input
                   id="name"
                   type="text"
                   placeholder="John Doe"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className={`transition-all ${
+                  className={`input-modern h-11 ${
                     errors.name
-                      ? "border-destructive focus:ring-destructive"
-                      : "focus:ring-primary"
+                      ? "border-destructive/50 focus:ring-destructive/30"
+                      : "focus:ring-secondary/30"
                   }`}
                 />
                 {errors.name && (
-                  <p className="text-destructive text-sm flex items-center gap-1">
+                  <p className="text-destructive text-sm flex items-center gap-1 mt-1">
                     <AlertCircle className="h-4 w-4" />
                     {errors.name}
                   </p>
@@ -144,21 +152,23 @@ export default function Signup() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-foreground/80 font-medium">
+                  Email
+                </Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="john@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={`transition-all ${
+                  className={`input-modern h-11 ${
                     errors.email
-                      ? "border-destructive focus:ring-destructive"
-                      : "focus:ring-primary"
+                      ? "border-destructive/50 focus:ring-destructive/30"
+                      : "focus:ring-secondary/30"
                   }`}
                 />
                 {errors.email && (
-                  <p className="text-destructive text-sm flex items-center gap-1">
+                  <p className="text-destructive text-sm flex items-center gap-1 mt-1">
                     <AlertCircle className="h-4 w-4" />
                     {errors.email}
                   </p>
@@ -166,21 +176,23 @@ export default function Signup() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password" className="text-foreground/80 font-medium">
+                  Password
+                </Label>
                 <Input
                   id="password"
                   type="password"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`transition-all ${
+                  className={`input-modern h-11 ${
                     errors.password
-                      ? "border-destructive focus:ring-destructive"
-                      : "focus:ring-primary"
+                      ? "border-destructive/50 focus:ring-destructive/30"
+                      : "focus:ring-secondary/30"
                   }`}
                 />
                 {errors.password && (
-                  <p className="text-destructive text-sm flex items-center gap-1">
+                  <p className="text-destructive text-sm flex items-center gap-1 mt-1">
                     <AlertCircle className="h-4 w-4" />
                     {errors.password}
                   </p>
@@ -188,21 +200,23 @@ export default function Signup() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Label htmlFor="confirmPassword" className="text-foreground/80 font-medium">
+                  Confirm Password
+                </Label>
                 <Input
                   id="confirmPassword"
                   type="password"
                   placeholder="••••••••"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className={`transition-all ${
+                  className={`input-modern h-11 ${
                     errors.confirmPassword
-                      ? "border-destructive focus:ring-destructive"
-                      : "focus:ring-primary"
+                      ? "border-destructive/50 focus:ring-destructive/30"
+                      : "focus:ring-secondary/30"
                   }`}
                 />
                 {errors.confirmPassword && (
-                  <p className="text-destructive text-sm flex items-center gap-1">
+                  <p className="text-destructive text-sm flex items-center gap-1 mt-1">
                     <AlertCircle className="h-4 w-4" />
                     {errors.confirmPassword}
                   </p>
@@ -210,12 +224,12 @@ export default function Signup() {
               </div>
 
               <Button
-                className="w-full bg-primary hover:bg-primary/90 hover:scale-[1.01] transition-all duration-300 shadow-lg"
+                className="w-full h-11 bg-gradient-to-r from-secondary to-primary hover:from-secondary/90 hover:to-primary/90 hover:scale-[1.01] transition-all duration-300 shadow-lg shadow-secondary/20 text-white font-medium rounded-xl"
                 type="submit"
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
                   "Create Account"
                 )}
@@ -224,10 +238,10 @@ export default function Signup() {
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border" />
+                <span className="w-full border-t border-border/50" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">
+                <span className="bg-card px-3 py-1 rounded-full text-muted-foreground">
                   Or sign up with
                 </span>
               </div>
@@ -235,12 +249,12 @@ export default function Signup() {
 
             <Button
               variant="outline"
-              className="w-full hover:bg-accent/50 hover:scale-[1.01]"
+              className="w-full h-11 border border-border/50 hover:bg-accent/10 hover:text-black hover:border-secondary/30 hover:scale-[1.01] transition-all duration-300 relative rounded-xl"
               onClick={() => signIn("google")}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 mr-2"
+                className="h-5 w-5 mr-2"
                 viewBox="0 0 48 48"
               >
                 <path
@@ -260,15 +274,15 @@ export default function Signup() {
                   d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
                 />
               </svg>
-              Google
+              <span className="font-medium">Google</span>
             </Button>
           </CardContent>
 
-          <CardFooter className="flex justify-center gap-1 text-sm text-muted-foreground">
+          <CardFooter className="flex justify-center gap-1 text-sm text-muted-foreground relative pb-6">
             Already have an account?{" "}
             <Link
               href="/login"
-              className="font-semibold text-primary hover:text-primary/80 transition-colors"
+              className="font-semibold text-secondary hover:text-secondary/80 transition-colors hover:underline underline-offset-4"
             >
               Log in
             </Link>

@@ -67,13 +67,19 @@ export default function Login() {
 
   return (
     <>
-      <div className="fixed top-2 right-4">
+      <div className="fixed top-4 right-6 z-10">
         <Theme />
       </div>
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-secondary/20 to-accent/30 p-4">
-        <Card className="w-full max-w-md shadow-2xl rounded-xl bg-card/90 backdrop-blur-lg border-border/50 hover:shadow-3xl transition-shadow duration-300">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-center text-3xl font-bold bg-gradient-to-r from-primary to-foreground bg-clip-text text-transparent">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/10 p-4 relative overflow-hidden">
+        {/* Decorative blobs */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full filter blur-3xl opacity-50 animate-blob"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/10 rounded-full filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+        
+        <Card className="w-full max-w-md shadow-2xl rounded-2xl bg-card/70 backdrop-blur-xl border border-white/10 dark:border-white/5 hover:shadow-primary/10 transition-all duration-500">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl opacity-30"></div>
+          
+          <CardHeader className="space-y-2 relative">
+            <CardTitle className="text-center text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent animate-hue">
               Welcome Back
             </CardTitle>
             <p className="text-center text-sm text-muted-foreground">
@@ -81,31 +87,33 @@ export default function Login() {
             </p>
           </CardHeader>
 
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-5 relative">
             <form className="space-y-4" onSubmit={handleLogin}>
               {errors.server && (
-                <p className="text-destructive text-sm flex items-center gap-1">
+                <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm flex items-center gap-2">
                   <AlertCircle className="h-4 w-4" />
                   {errors.server}
-                </p>
+                </div>
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-foreground/80 font-medium">
+                  Email
+                </Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="john@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={`transition-all ${
+                  className={`input-modern h-11 ${
                     errors.email
-                      ? "border-destructive focus:ring-destructive"
-                      : "focus:ring-primary"
+                      ? "border-destructive/50 focus:ring-destructive/30"
+                      : "focus:ring-primary/30"
                   }`}
                 />
                 {errors.email && (
-                  <p className="text-destructive text-sm flex items-center gap-1">
+                  <p className="text-destructive text-sm flex items-center gap-1 mt-1">
                     <AlertCircle className="h-4 w-4" />
                     {errors.email}
                   </p>
@@ -114,10 +122,12 @@ export default function Login() {
 
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" className="text-foreground/80 font-medium">
+                    Password
+                  </Label>
                   <Link
                     href="/forgot-password"
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors hover:underline underline-offset-4"
+                    className="text-sm text-primary hover:text-primary/80 transition-colors hover:underline underline-offset-4"
                   >
                     Forgot password?
                   </Link>
@@ -128,14 +138,14 @@ export default function Login() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`transition-all ${
+                  className={`input-modern h-11 ${
                     errors.password
-                      ? "border-destructive focus:ring-destructive"
-                      : "focus:ring-primary"
+                      ? "border-destructive/50 focus:ring-destructive/30"
+                      : "focus:ring-primary/30"
                   }`}
                 />
                 {errors.password && (
-                  <p className="text-destructive text-sm flex items-center gap-1">
+                  <p className="text-destructive text-sm flex items-center gap-1 mt-1">
                     <AlertCircle className="h-4 w-4" />
                     {errors.password}
                   </p>
@@ -143,12 +153,12 @@ export default function Login() {
               </div>
 
               <Button
-                className="w-full bg-primary hover:bg-primary/90 hover:scale-[1.01] transition-all duration-300 shadow-lg"
+                className="w-full h-11 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 hover:scale-[1.01] transition-all duration-300 shadow-lg shadow-primary/20 text-white font-medium rounded-xl"
                 type="submit"
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
                   "Sign In"
                 )}
@@ -157,10 +167,10 @@ export default function Login() {
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border" />
+                <span className="w-full border-t border-border/50" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">
+                <span className="bg-card px-3 py-1 rounded-full text-muted-foreground">
                   Or continue with
                 </span>
               </div>
@@ -168,7 +178,7 @@ export default function Login() {
 
             <Button
               variant="outline"
-              className="w-full hover:bg-accent/50 hover:scale-[1.01] relative"
+              className="w-full h-11 border border-border/50 hover:bg-accent/10 hover:border-primary/30 hover:text-black hover:scale-[1.01] transition-all duration-300 relative rounded-xl"
               onClick={() => {
                 setIsGoogleLoading(true);
                 signIn("google", { callbackUrl: "/dashboard" });
@@ -176,12 +186,12 @@ export default function Login() {
               disabled={isGoogleLoading}
             >
               {isGoogleLoading ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
               ) : (
                 <>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 mr-2"
+                    className="h-5 w-5 mr-2"
                     viewBox="0 0 48 48"
                   >
                     <path
@@ -201,17 +211,17 @@ export default function Login() {
                       d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
                     />
                   </svg>
-                  Google
+                  <span className="font-medium">Google</span>
                 </>
               )}
             </Button>
           </CardContent>
 
-          <CardFooter className="flex justify-center gap-1 text-sm text-muted-foreground">
+          <CardFooter className="flex justify-center gap-1 text-sm text-muted-foreground relative pb-6">
             Don't have an account?{" "}
             <Link
               href="/signup"
-              className="font-semibold text-primary hover:text-primary/80 transition-colors"
+              className="font-semibold text-primary hover:text-primary/80 transition-colors hover:underline underline-offset-4"
             >
               Sign up
             </Link>
