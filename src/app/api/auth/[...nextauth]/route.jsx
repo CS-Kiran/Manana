@@ -3,7 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import User from "@/models/User";
 import connectDB from "@/lib/db";
-import bcrypt from "bcrypt"; 
+import bcrypt from "bcrypt";
 
 connectDB();
 
@@ -16,9 +16,9 @@ export const authOptions = {
         params: {
           prompt: "consent",
           access_type: "offline",
-          response_type: "code"
-        }
-      }
+          response_type: "code",
+        },
+      },
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -68,30 +68,37 @@ export const authOptions = {
     }),
   ],
   callbacks: {
+    // Modify the signIn callback
     async signIn({ user, account, profile }) {
       if (account.provider === "google") {
-        const { email } = user;
+        try {
+          const { email } = user;
+          const existingUser = await User.findOne({ email }).exec();
 
-        const existingUser = await User.findOne({ email }).exec();
-        if (existingUser) {
-          if (existingUser.provider !== "google") {
-            // Return false to redirect to error page with suitable message
-            return false;
+          if (existingUser) {
+            if (existingUser.provider !== "google") {
+              return `/login?error=ProviderConflict&email=${encodeURIComponent(
+                email
+              )}`;
+            }
+            user.id = existingUser._id;
+            return true;
           }
-          user.id = existingUser._id;
+
+          const newUser = await User.create({
+            name: profile.name,
+            email,
+            provider: "google",
+            googleId: profile.sub,
+            emailVerified: new Date(),
+          });
+
+          user.id = newUser._id;
           return true;
+        } catch (error) {
+          console.error("Google signIn error:", error);
+          return `/login?error=GoogleLoginFailed`;
         }
-
-        const newUser = await User.create({
-          name: profile.name,
-          email,
-          provider: "google",
-          googleId: profile.sub,
-          emailVerified: new Date(),
-        });
-
-        user.id = newUser._id;
-        return true;
       }
       return true;
     },
@@ -112,6 +119,12 @@ export const authOptions = {
         session.user.provider = token.provider;
       }
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith("/login?error")) return url;
+      return url.startsWith(baseUrl) 
+        ? url 
+        : `${baseUrl}/dashboard`;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
