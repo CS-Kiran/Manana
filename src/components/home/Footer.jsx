@@ -1,5 +1,5 @@
 import { FaGithub, FaInstagram } from "react-icons/fa";
-import AdminLogin from "./AdminLogin";
+import AdminLogin from "../auth/AdminLogin";
 
 export default function Footer() {
   return (

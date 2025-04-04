@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sidebar } from "@/components/home/Sidebar";
+import { Sidebar } from "@/components/dashboard/Sidebar";
 
 export default function Dashboard() {
   return (

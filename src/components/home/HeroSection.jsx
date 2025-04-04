@@ -43,7 +43,7 @@ export default function HeroSection() {
               muted
               playsInline
               className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-300 ease-in-out"
-              src="/mindful.mp4"
+              src="/videos/mindful.mp4"
             />
           </div>
         </div>
