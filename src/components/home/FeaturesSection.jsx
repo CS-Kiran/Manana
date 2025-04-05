@@ -64,10 +64,9 @@ export default function FeaturesSection() {
 
   return (
     <section id="features" className="py-20 px-4 relative">
-      {/* Background elements */}
       <div className="absolute top-20 right-0 w-96 h-96 bg-primary/10 rounded-full filter blur-3xl opacity-30 dark:opacity-10"></div>
       <div className="absolute bottom-20 left-0 w-96 h-96 bg-accent/10 rounded-full filter blur-3xl opacity-30 dark:opacity-10"></div>
-      
+
       <div className="container mx-auto max-w-7xl">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -92,7 +91,7 @@ export default function FeaturesSection() {
           {features.map((feature, index) => (
             <motion.div
               key={index}
-              className="bg-card rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-border/50"
+              className="bg-card cursor-default rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-border/50"
               variants={itemVariants}
               whileHover={{ y: -5, transition: { duration: 0.2 } }}
             >
