@@ -18,7 +18,7 @@ Manana isn't just another productivity app. It's a mindful companion for your da
 ## 🔧 Built with Care
 
 Manana combines modern technology with mindful design principles:
-
+![Demo of the application](./public/images/home.png)
 ```
 🛠️ Next.js 15 | 📊 MongoDB Atlas | 🎨 ShadCN-UI
 ```
