@@ -22,7 +22,9 @@ export function ThemeProvider({ children }) {
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
+      <div className={`bg-background text-foreground min-h-screen`}>
+        {children}
+      </div>
     </ThemeContext.Provider>
   );
 }

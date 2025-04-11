@@ -5,13 +5,13 @@ import { motion } from "framer-motion";
 
 export default function Footer() {
   const socialLinks = [
-    { icon: FaGithub, href: "https://github.com/CS-Kiran", hoverColor: "#333" },
-    { icon: FaInstagram, href: "https://instagram.com", hoverColor: "#E1306C" },
-    { icon: RiTwitterXFill, href: "https://x.com", hoverColor: "#000" },
+    { icon: FaGithub, href: "https://github.com/CS-Kiran", hoverColor: "var(--primary)" },
+    { icon: FaInstagram, href: "https://instagram.com", hoverColor: "var(--accent)" },
+    { icon: RiTwitterXFill, href: "https://x.com", hoverColor: "var(--foreground)" },
   ];
 
   return (
-    <footer className="w-full py-8 mt-20 text-foreground bg-background/50 backdrop-blur-sm shadow-lg border-t dark:border-border/20">
+    <footer className="w-full py-8 mt-20 text-foreground bg-background/50 backdrop-blur-sm shadow-lg border-t border-border/20">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-8">
           <div className="flex flex-col items-center md:items-start space-y-6 w-full md:w-auto">
@@ -20,7 +20,7 @@ export default function Footer() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
-              className="flex items-center bg-gradient-to-r from-teal-500 to-violet-600 bg-clip-text text-transparent"
+              className="flex items-center bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent"
             >
               <span className="text-xl font-bold">Manana</span>
             </motion.div>
@@ -30,7 +30,7 @@ export default function Footer() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
               viewport={{ once: true }}
-              className="text-sm text-foreground/70"
+              className="text-sm text-foreground/70 dark:text-foreground/90"
             >
               Stay mindful, stay productive every day.
             </motion.p>
@@ -50,7 +50,7 @@ export default function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-foreground/70 hover:text-foreground transition-colors duration-300"
+                  className="text-foreground/70 hover:text-foreground transition-colors duration-300 dark:text-foreground/90"
                   whileHover={{
                     scale: 1.2,
                     color: social.hoverColor,
@@ -71,7 +71,7 @@ export default function Footer() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
-              className="text-sm text-center md:text-right text-foreground/70"
+              className="text-sm text-center md:text-right text-foreground/70 dark:text-foreground/90"
             >
               <p className="font-medium">
                 &copy; {new Date().getFullYear()} Manana. All rights reserved.
@@ -88,12 +88,12 @@ export default function Footer() {
           className="flex flex-wrap justify-center md:justify-between mt-6 pt-2 border-t border-border/10 text-sm"
         >
           <div className="flex flex-wrap justify-center md:justify-start gap-x-8 gap-y-2 font-semibold">
-            <a href="#" className="text-foreground/70 hover:text-foreground transition-colors duration-300">Home</a>
-            <a href="#features" className="text-foreground/70 hover:text-foreground transition-colors duration-300">Features</a>
-            <a href="#about" className="text-foreground/70 hover:text-foreground transition-colors duration-300">About</a>
-            <a href="#contact" className="text-foreground/70 hover:text-foreground transition-colors duration-300">Contact</a>
+            <a href="#" className="text-foreground/70 hover:text-foreground transition-colors duration-300 dark:text-foreground/90">Home</a>
+            <a href="#features" className="text-foreground/70 hover:text-foreground transition-colors duration-300 dark:text-foreground/90">Features</a>
+            <a href="#about" className="text-foreground/70 hover:text-foreground transition-colors duration-300 dark:text-foreground/90">About</a>
+            <a href="#contact" className="text-foreground/70 hover:text-foreground transition-colors duration-300 dark:text-foreground/90">Contact</a>
           </div>
-          <div className="mt-4 md:mt-0 text-foreground/60 text-xs">
+          <div className="mt-4 md:mt-0 text-foreground/60 text-xs dark:text-foreground/80">
             <a href="#" className="hover:text-foreground transition-colors duration-300">Privacy Policy</a>
             <span className="mx-2">•</span>
             <a href="#" className="hover:text-foreground transition-colors duration-300">Terms of Service</a>

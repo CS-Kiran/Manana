@@ -1,4 +1,6 @@
+import React from "react";
 import { Providers } from "@/context/provider";
+import { ThemeProvider } from "@/context/theme-provider";
 import "./globals.css";
 
 export const metadata = {
@@ -10,9 +12,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <Providers>
-          {children}
-        </Providers>
+        <ThemeProvider>
+          <Providers>
+            {children}
+          </Providers>
+        </ThemeProvider>
       </body>
     </html>
   );

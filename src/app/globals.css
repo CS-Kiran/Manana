@@ -4,64 +4,50 @@
 
 @layer base {
   :root {
-    /* Neo-Glassmorphism Light Theme */
-    --background: 220 25% 97%;
-    --foreground: 229 84% 5%;
-    --card: 0 0% 100%;
-    --card-foreground: 229 84% 5%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 229 84% 5%;
-    --primary: 180 100% 37%;
+    /* Light theme - Clean, minimal with purple/blue palette */
+    --background: 220 30% 98%;
+    --foreground: 250 20% 10%;
+    --card: 220 20% 96%;
+    --card-foreground: 250 20% 10%;
+    --popover: 220 20% 96%;
+    --popover-foreground: 250 20% 10%;
+    --primary: 250 90% 60%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 272 94% 69%;
+    --secondary: 230 85% 65%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 272 94% 69%;
+    --muted: 230 20% 90%;
+    --muted-foreground: 250 10% 40%;
+    --accent: 270 80% 55%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
+    --destructive: 350 95% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 180 100% 37%;
-    --radius: 1rem;
-    
-    /* Chart colors */
-    --chart-1: 180 100% 37%;
-    --chart-2: 272 94% 69%;
-    --chart-3: 35 92% 65%;
-    --chart-4: 339 90% 65%;
-    --chart-5: 211 100% 65%;
+    --border: 230 15% 85%;
+    --input: 230 15% 85%;
+    --ring: 250 90% 60%;
+    --radius: 0.5rem;
   }
 
   .dark {
-    /* Neo-Glassmorphism Dark Theme */
-    --background: 230 25% 8%;
-    --foreground: 210 40% 98%;
-    --card: 230 30% 12%;
-    --card-foreground: 210 40% 98%;
-    --popover: 230 30% 12%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 184 100% 50%;
-    --primary-foreground: 230 25% 8%;
-    --secondary: 278 100% 76%;
-    --secondary-foreground: 230 25% 8%;
-    --muted: 230 25% 15%;
-    --muted-foreground: 217 19% 67%;
-    --accent: 278 100% 76%;
-    --accent-foreground: 230 25% 8%;
-    --destructive: 0 75% 65%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 230 25% 18%;
-    --input: 230 25% 18%;
-    --ring: 184 100% 50%;
-    
-    /* Chart colors */
-    --chart-1: 184 100% 50%;
-    --chart-2: 278 100% 76%;
-    --chart-3: 40 95% 70%;
-    --chart-4: 330 80% 65%;
-    --chart-5: 215 100% 70%;
+    /* Dark theme - Deep blue/purple background with vibrant accents */
+    --background: 240 30% 8%;
+    --foreground: 230 20% 98%;
+    --card: 240 25% 12%;
+    --card-foreground: 230 20% 98%;
+    --popover: 240 25% 12%;
+    --popover-foreground: 230 20% 98%;
+    --primary: 250 90% 65%;
+    --primary-foreground: 240 30% 8%;
+    --secondary: 230 85% 70%;
+    --secondary-foreground: 240 30% 8%;
+    --muted: 240 20% 18%;
+    --muted-foreground: 230 15% 70%;
+    --accent: 270 80% 65%;
+    --accent-foreground: 240 30% 8%;
+    --destructive: 350 95% 65%;
+    --destructive-foreground: 230 20% 98%;
+    --border: 240 20% 20%;
+    --input: 240 20% 20%;
+    --ring: 250 90% 65%;
   }
 }
 
@@ -69,107 +55,55 @@
   * {
     @apply border-border outline-ring/50;
   }
-  
+
   html {
     scroll-behavior: smooth;
   }
-  
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
-    background-image: radial-gradient(
-      circle at 50% 0%, 
-      hsl(var(--primary) / 0.03) 0%, 
-      transparent 40%
-    );
-  }
-  
-  /* For WebKit browsers (Chrome, Safari) */
-  ::-webkit-scrollbar {
-    width: 10px;
   }
 
-  ::-webkit-scrollbar-track {
-    @apply bg-muted/50;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    @apply bg-primary/50 rounded-full hover:bg-primary/70 transition-colors;
+  svg:hover {
+    @apply text-accent transition-colors;
   }
 }
 
 @layer utilities {
-  .animation-delay-2000 {
-    animation-delay: 2s;
-  }
-  .animation-delay-4000 {
-    animation-delay: 4s;
-  }
-  
-  @keyframes blob {
-    0% {
-      transform: translate(0px, 0px) scale(1);
-    }
-    33% {
-      transform: translate(30px, -50px) scale(1.1);
-    }
-    66% {
-      transform: translate(-20px, 20px) scale(0.9);
-    }
-    100% {
-      transform: translate(0px, 0px) scale(1);
-    }
-  }
-  
-  .animate-blob {
-    animation: blob 12s infinite;
-  }
-  
-  /* Glassmorphism effects */
-  .glass {
-    @apply backdrop-blur-md bg-white/10 border border-white/20;
-  }
-  
-  .glass-card {
-    @apply backdrop-blur-md bg-card/80 border border-white/10 shadow-xl;
-  }
-  
-  /* Text gradient animation */
-  @keyframes hue-rotate {
-    0% {
-      filter: hue-rotate(0deg);
-    }
-    100% {
-      filter: hue-rotate(360deg);
-    }
-  }
-  
-  .animate-hue {
-    animation: hue-rotate 10s linear infinite;
-  }
-  
-  /* Soft transitions */
   .transition-all-soft {
-    @apply transition-all duration-300 ease-in-out;
+    @apply transition-all duration-300 ease-out;
   }
-}
 
-/* Additional utility classes */
-@layer components {
-  .glowing-border {
-    @apply border border-transparent;
-    box-shadow: 0 0 15px 0 hsla(var(--primary) / 0.3);
+  .glass-card {
+    @apply bg-card/90 backdrop-blur-sm border border-border/50 shadow-sm rounded-lg;
   }
-  
-  .input-modern {
-    @apply bg-background/50 backdrop-blur-sm border border-border/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 rounded-xl px-4 py-3 transition-all duration-300;
-  }
-  
+
   .btn-gradient {
-    @apply bg-gradient-to-r from-primary to-accent text-white font-medium rounded-full px-8 py-3 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 active:scale-95;
+    @apply bg-gradient-to-r from-primary to-secondary text-primary-foreground font-medium rounded-lg px-6 py-2 hover:translate-y-[-1px] hover:shadow-md transition-all duration-200;
+  }
+
+  .heading-gradient {
+    @apply bg-gradient-to-r from-secondary via-primary to-accent bg-clip-text text-transparent font-bold;
   }
   
-  .heading-gradient {
-    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  .subtle-border {
+    @apply border border-border/40;
+  }
+  
+  .focus-ring {
+    @apply focus:ring-2 focus:ring-primary/30 focus:outline-none;
+  }
+  
+  .hover-effect {
+    @apply hover:bg-muted transition-colors duration-200;
+  }
+
+  .frosted-panel {
+    @apply bg-card/80 backdrop-blur-md border border-primary/10 shadow-lg;
+  }
+  
+  .purple-shadow {
+    @apply shadow-[0_4px_14px_0_rgba(124,58,237,0.2)];
   }
 }
