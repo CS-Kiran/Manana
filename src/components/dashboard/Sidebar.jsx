@@ -8,15 +8,31 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { DASHBOARD_LINKS } from "@/config/dashboard-links";
 import Theme from "@/components/ui/theme";
-import { useState } from "react";
-import { LogOut, Menu } from "lucide-react";
+import { useState, useEffect } from "react";
+import { LogOut, Menu, ChevronLeft, ChevronRight } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 
 export function Sidebar() {
   const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+      if (window.innerWidth < 768) {
+        setIsCollapsed(true);
+        setIsOpen(false);
+      }
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -27,106 +43,161 @@ export function Sidebar() {
     }
   };
 
+  const toggleSidebar = () => {
+    if (isMobile) {
+      setIsOpen(!isOpen);
+    } else {
+      setIsCollapsed(!isCollapsed);
+    }
+  };
+
   return (
     <>
-      <button
-        className="lg:hidden fixed top-4 right-4 p-2 z-50 text-gray-700 dark:text-gray-200 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <Menu className="h-6 w-6" />
-      </button>
+      {/* Mobile menu button with improved accessibility */}
+      {isMobile && (
+        <button
+          onClick={toggleSidebar}
+          aria-label={isOpen ? "Close sidebar" : "Open sidebar"}
+          aria-expanded={isOpen}
+          className="fixed top-4 left-4 z-50 p-2 rounded-lg bg-background/80 backdrop-blur-sm border border-border shadow-lg transition-all hover:bg-background"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+      )}
 
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-gray-900/30 lg:hidden z-40"
+      {/* Mobile backdrop with improved animation */}
+      {isMobile && isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
           onClick={() => setIsOpen(false)}
         />
       )}
 
-      <motion.nav
-        className={cn(
-          "fixed lg:relative h-screen border-r border-gray-200 dark:border-gray-800",
-          "w-64 transition-all duration-300 z-50 shadow-xl bg-white dark:bg-gray-900",
-          isOpen ? "left-0" : "-left-full lg:left-0"
-        )}
-        initial={{ x: -300 }}
-        animate={{ x: isOpen ? 0 : -300 }}
+      {/* Sidebar with consistent spacing */}
+      <motion.aside
+        initial={false}
+        animate={{ 
+          width: isCollapsed ? "64px" : "240px",
+          x: (isMobile && !isOpen) ? "-100%" : 0
+        }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className={cn(
+          "fixed top-0 left-0 z-40 h-full border-r bg-card/50 backdrop-blur-sm",
+          "flex flex-col shadow-lg"
+        )}
       >
+        {/* Toggle button for desktop with improved accessibility */}
+        {!isMobile && (
+          <button
+            onClick={toggleSidebar}
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            className="absolute -right-3 top-6 w-6 h-6 rounded-full bg-background border shadow-md flex items-center justify-center hover:bg-primary/10 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
+          </button>
+        )}
+
+        {/* Sidebar content with consistent padding */}
         <div className="flex flex-col h-full p-4 gap-4">
-          {/* User Profile Section */}
-          <div className="flex items-center gap-3 pb-4 mb-4 border-b border-gray-200 dark:border-gray-800">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 dark:from-indigo-600 dark:to-indigo-900 flex items-center justify-center border-2 border-indigo-300 dark:border-indigo-800">
-              <span className="font-medium text-white">
-                {session?.user?.name?.charAt(0).toUpperCase() || "G"}
-              </span>
+          {/* User profile with consistent styling */}
+          <div className={cn(
+            "flex items-center gap-3 py-2",
+            isCollapsed ? "justify-center" : "border-b pb-4"
+          )}>
+            <div className="relative w-9 h-9">
+              <div className="w-full h-full rounded-full bg-gradient-to-br from-primary to-primary-foreground flex items-center justify-center">
+                <span className="text-sm font-medium text-primary-foreground">
+                  {session?.user?.name?.[0]?.toUpperCase() || "U"}
+                </span>
+              </div>
             </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-sm truncate text-gray-800 dark:text-gray-100">
-                {session?.user?.name || "Guest User"}
-              </h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                {session?.user?.email || "No email available"}
-              </p>
-            </div>
-            <Theme className="ml-2" />
+            {!isCollapsed && (
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-semibold truncate">
+                  {session?.user?.name || "Guest User"}
+                </h3>
+                <p className="text-xs text-muted-foreground truncate">
+                  {session?.user?.email || "guest@example.com"}
+                </p>
+              </div>
+            )}
           </div>
 
-          {/* Navigation Links */}
-          <div className="flex-1 space-y-1">
+          {/* Navigation with improved spacing and transitions */}
+          <nav className="flex-1 space-y-2 mt-2">
             {DASHBOARD_LINKS.map((link) => {
               const isActive = pathname === link.path;
+              
               return (
-                <motion.div
+                <Link 
                   key={link.path}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  href={link.path}
+                  aria-current={isActive ? "page" : undefined}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all",
+                    isCollapsed ? "justify-center" : "",
+                    isActive 
+                      ? "bg-primary/10 text-primary hover:bg-primary/20" 
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
                 >
-                  <Button
-                    asChild
-                    variant="ghost"
-                    className={cn(
-                      "w-full justify-start gap-3 px-3 h-12 rounded-lg transition-colors group",
-                      isActive 
-                        ? "bg-card dark:bg-card/80 border border-border dark:border-border/50 text-primary dark:text-primary-foreground" 
-                        : "text-muted-foreground dark:text-muted-foreground hover:bg-primary hover:text-white dark:hover:bg-primary dark:hover:text-white"
-                    )}
-                  >
-                    <Link href={link.path}>
-                      <link.icon className={cn(
-                        "h-5 w-5 transition-colors",
-                        isActive 
-                          ? "text-primary dark:text-primary-foreground" 
-                          : "text-muted-foreground dark:text-muted-foreground group-hover:text-white"
-                      )} />
-                      <span className="text-sm font-medium">{link.label}</span>
-                      {link.notification && (
-                        <Badge className="ml-auto px-2 py-1 text-xs bg-primary/80 text-primary-foreground dark:bg-primary/80 dark:text-primary-foreground group-hover:bg-white/80 group-hover:text-primary">
-                          {link.notification}
-                        </Badge>
-                      )}
-                    </Link>
-                  </Button>
-                </motion.div>
+                  <link.icon className={cn(
+                    "h-5 w-5",
+                    isActive ? "text-primary" : "text-muted-foreground"
+                  )} />
+                  
+                  {!isCollapsed && (
+                    <span className="text-sm font-medium truncate">
+                      {link.label}
+                    </span>
+                  )}
+
+                  {!isCollapsed && link.notification && (
+                    <Badge className="ml-auto bg-primary/10 text-primary hover:bg-primary/20">
+                      {link.notification}
+                    </Badge>
+                  )}
+                </Link>
               );
             })}
-          </div>
+          </nav>
 
-          {/* Logout Section */}
-          <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-800">
+          {/* Bottom actions with improved layout */}
+          <div className={cn(
+            "mt-auto border-t pt-4",
+            isCollapsed ? "flex justify-center" : "flex justify-between items-center"
+          )}>
+            <Theme />
             <Button
               variant="ghost"
-              className="w-full justify-between gap-3 px-3 h-12 rounded-lg text-gray-700 dark:text-gray-200 hover:text-destructive dark:hover:text-destructive hover:bg-destructive/10 transition-colors group"
+              size="icon"
               onClick={handleLogout}
+              aria-label="Logout"
+              className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
             >
-              <div className="flex items-center gap-3">
-                <LogOut className="h-5 w-5 transition-colors group-hover:text-destructive" />
-                <span className="text-sm font-medium">Log Out</span>
-              </div>
+              <LogOut className="h-5 w-5" />
+              {!isCollapsed && <span className="sr-only">Logout</span>}
             </Button>
           </div>
         </div>
-      </motion.nav>
+      </motion.aside>
+
+      {/* Content offset with smoother transition */}
+      <div 
+        className={cn(
+          "transition-[margin] duration-300 ease-in-out",
+          isCollapsed ? "ml-16" : "ml-60",
+          isMobile && "ml-0"
+        )} 
+      />
     </>
   );
 }
