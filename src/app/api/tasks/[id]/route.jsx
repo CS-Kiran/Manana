@@ -3,7 +3,7 @@ import { getToken } from 'next-auth/jwt';
 import { NextResponse } from 'next/server';
 import Task from '@/models/Task';
 
-export async function PATCH(request, context) {
+export async function PATCH(request, { params }) {
   try {
     await connectDB();
 
@@ -15,10 +15,10 @@ export async function PATCH(request, context) {
       );
     }
 
-    const { params } = context;
+    const { id } = params;
     const data = await request.json();
     const task = await Task.findOneAndUpdate(
-      { _id: params.id, userId: token.sub },
+      { _id: id, userId: token.sub },
       { ...data, updatedAt: new Date() },
       { new: true, maxTimeMS: 5000 }
     ).lean();

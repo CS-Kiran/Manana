@@ -13,7 +13,8 @@ import {
   Filter,
   Search,
   AlertCircle,
-  ChevronDown
+  ChevronDown,
+  Plus
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,9 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import { Modal } from "@/components/ui/modal";
 import { cn } from "@/lib/utils";
+import TaskForm from "./TaskForm";
 
 export default function TaskList({ tasks: initialTasks, onEdit, onDelete, onStatusChange }) {
   const [tasks, setTasks] = useState(initialTasks || []);
@@ -31,6 +34,9 @@ export default function TaskList({ tasks: initialTasks, onEdit, onDelete, onStat
   const [isFiltersExpanded, setIsFiltersExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
+  const [isCompletedModalOpen, setIsCompletedModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -97,7 +103,41 @@ export default function TaskList({ tasks: initialTasks, onEdit, onDelete, onStat
   const handleEditTask = (taskId) => {
     const task = tasks.find((t) => t._id === taskId);
     if (task) {
-      onEdit?.(task);
+      setEditingTask(task);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleSubmitTask = async (formData) => {
+    try {
+      const url = editingTask 
+        ? `/api/tasks/${editingTask._id}`
+        : '/api/tasks';
+      
+      const method = editingTask ? 'PATCH' : 'POST';
+      
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) throw new Error('Failed to save task');
+      
+      const { task: savedTask } = await res.json();
+      
+      setTasks(prev => {
+        if (editingTask) {
+          return prev.map(t => t._id === savedTask._id ? savedTask : t);
+        }
+        return [savedTask, ...prev];
+      });
+
+      setIsModalOpen(false);
+      setEditingTask(null);
+    } catch (error) {
+      console.error('Error saving task:', error);
+      throw error;
     }
   };
 
@@ -116,10 +156,14 @@ export default function TaskList({ tasks: initialTasks, onEdit, onDelete, onStat
   };
 
   // Filter and sort tasks
+  const completedTasks = tasks.filter(task => task.status === "completed")
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
   const filteredTasks = tasks
     .filter((task) => {
-      const matchesFilter =
-        filter === "all" || task.status === filter;
+      // Exclude completed tasks from main list
+      if (task.status === "completed") return false;
+
       const matchesPriority =
         selectedPriority === "all" || task.priority === selectedPriority;
       const matchesSearch =
@@ -130,7 +174,7 @@ export default function TaskList({ tasks: initialTasks, onEdit, onDelete, onStat
           tag.toLowerCase().includes(search.toLowerCase())
         );
 
-      return matchesFilter && matchesPriority && matchesSearch;
+      return matchesPriority && matchesSearch;
     })
     .sort((a, b) => {
       // Sort by priority first, then by creation date
@@ -183,7 +227,7 @@ export default function TaskList({ tasks: initialTasks, onEdit, onDelete, onStat
 
   return (
     <div className="space-y-6">
-      {/* Search and toggle filters */}
+      {/* Search and filters section */}
       <div className="p-4 rounded-xl bg-card/50 backdrop-blur-sm border shadow-lg">
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="w-full md:w-auto flex items-center gap-2">
@@ -206,6 +250,16 @@ export default function TaskList({ tasks: initialTasks, onEdit, onDelete, onStat
               aria-label="Toggle filters"
             >
               <Filter className="h-4 w-4" />
+            </Button>
+            <Button
+              className="h-11 bg-primary text-primary-foreground hover:bg-primary/90"
+              onClick={() => {
+                setEditingTask(null);
+                setIsModalOpen(true);
+              }}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Task
             </Button>
           </div>
 
@@ -261,7 +315,15 @@ export default function TaskList({ tasks: initialTasks, onEdit, onDelete, onStat
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               whileHover={{ y: -5, transition: { duration: 0.2 } }}
-              className="bg-card/50 backdrop-blur-sm p-5 rounded-xl border shadow-lg hover:shadow-xl transition-all"
+              className={cn(
+                "bg-card/50 backdrop-blur-sm p-5 rounded-xl border shadow-lg hover:shadow-xl transition-all",
+                status === "completed" && "cursor-pointer"
+              )}
+              onClick={() => {
+                if (status === "completed" && count > 0) {
+                  setIsCompletedModalOpen(true);
+                }
+              }}
             >
               <div className="flex justify-between items-center">
                 <div className="text-sm text-muted-foreground capitalize mb-1">
@@ -277,7 +339,7 @@ export default function TaskList({ tasks: initialTasks, onEdit, onDelete, onStat
                 {count}
               </div>
               <div className="text-xs text-muted-foreground mt-2">
-                {status === "completed" ? "Tasks completed" : 
+                {status === "completed" ? "Tasks completed (click to view)" : 
                  status === "in-progress" ? "Tasks in progress" : 
                  "Tasks to do"}
               </div>
@@ -479,6 +541,138 @@ export default function TaskList({ tasks: initialTasks, onEdit, onDelete, onStat
           </p>
         </div>
       )}
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingTask(null);
+        }}
+        title={editingTask ? "Edit Task" : "Add Task"}
+        className="bg-card/50 backdrop-blur-sm rounded-xl border"
+      >
+        <TaskForm
+          task={editingTask}
+          onSubmit={handleSubmitTask}
+          onCancel={() => {
+            setIsModalOpen(false);
+            setEditingTask(null);
+          }}
+        />
+      </Modal>
+
+      {/* Add Completed Tasks Modal */}
+      <Modal
+        isOpen={isCompletedModalOpen}
+        onClose={() => setIsCompletedModalOpen(false)}
+        title="Completed Tasks"
+        className="bg-card/50 backdrop-blur-sm rounded-xl border"
+      >
+        <div className="space-y-4">
+          <ScrollArea className="h-[60vh] pr-4">
+            <AnimatePresence mode="popLayout">
+              {completedTasks.map((task) => (
+                <motion.div
+                  key={task._id}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="p-4 mb-4 rounded-xl border bg-card/50 hover:bg-card/80 backdrop-blur-sm group hover:shadow-lg transition-all"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-3 flex-1">
+                      <button
+                        onClick={() => {
+                          handleStatusChange(task._id, "todo");
+                          setIsCompletedModalOpen(false);
+                        }}
+                        aria-label="Mark as incomplete"
+                        className="mt-1 transition-transform hover:scale-110"
+                      >
+                        <CheckCircle2 className="h-5 w-5 text-green-500" />
+                      </button>
+
+                      <div className="space-y-2 flex-1">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-medium text-base line-through text-muted-foreground">
+                            {task.title}
+                          </h3>
+                          <Badge
+                            variant="outline"
+                            className={getPriorityColor(task.priority)}
+                          >
+                            {task.priority}
+                          </Badge>
+                        </div>
+                        
+                        {task.description && (
+                          <p className="text-sm text-muted-foreground">
+                            {task.description}
+                          </p>
+                        )}
+                        
+                        {task.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {task.tags.map((tag) => (
+                              <Badge
+                                key={tag}
+                                variant="secondary"
+                                className="px-2 py-0.5 text-xs bg-primary/10 text-primary hover:bg-primary/20"
+                              >
+                                <Tag className="h-3 w-3 mr-1" />
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                        
+                        <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                          {task.dueDate && (
+                            <span className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              {new Date(task.dueDate).toLocaleDateString()}
+                            </span>
+                          )}
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            Completed {formatDistanceToNow(new Date(task.updatedAt || task.createdAt), { addSuffix: true })}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Delete task"
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 sm:opacity-0 sm:group-hover:opacity-100 transition-all"
+                      onClick={() => handleDeleteTask(task._id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </ScrollArea>
+          
+          {completedTasks.length === 0 && (
+            <div className="text-center py-8 text-muted-foreground">
+              <p>No completed tasks yet</p>
+            </div>
+          )}
+          
+          <div className="flex justify-end pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsCompletedModalOpen(false)}
+            >
+              Close
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
