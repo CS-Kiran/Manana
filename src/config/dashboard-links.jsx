@@ -5,7 +5,6 @@ export const DASHBOARD_LINKS = [
     icon: ListChecks,
     label: "Tasks",
     path: "/dashboard/tasks",
-    notification: 2,
   },
   {
     icon: Notebook,
@@ -21,6 +20,5 @@ export const DASHBOARD_LINKS = [
     icon: Bell,
     label: "Notifications",
     path: "/dashboard/notifications",
-    notification: 5,
   },
 ];

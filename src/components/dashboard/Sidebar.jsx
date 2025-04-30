@@ -19,6 +19,7 @@ export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
+  const [taskCounts, setTaskCounts] = useState({ todo: 0, "in-progress": 0 });
 
   useEffect(() => {
     const checkMobile = () => {
@@ -32,6 +33,24 @@ export function Sidebar() {
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    const fetchTaskCounts = async () => {
+      try {
+        const res = await fetch("/api/tasks");
+        const data = await res.json();
+        if (res.ok) {
+          const todos = data.tasks.filter(t => t.status === "todo").length;
+          const inProgress = data.tasks.filter(t => t.status === "in-progress").length;
+          setTaskCounts({ todo: todos, "in-progress": inProgress });
+        }
+      } catch (error) {
+        console.error("Error fetching task counts:", error);
+      }
+    };
+
+    fetchTaskCounts();
   }, []);
 
   const handleLogout = async () => {
@@ -49,6 +68,15 @@ export function Sidebar() {
     } else {
       setIsCollapsed(!isCollapsed);
     }
+  };
+
+  // Get notification count for a link
+  const getLinkNotification = (link) => {
+    if (link.path === "/dashboard/tasks") {
+      const total = taskCounts.todo + taskCounts["in-progress"];
+      return total > 0 ? total : null;
+    }
+    return null;
   };
 
   return (
@@ -135,6 +163,7 @@ export function Sidebar() {
           <nav className="flex-1 space-y-2 mt-2">
             {DASHBOARD_LINKS.map((link) => {
               const isActive = pathname === link.path;
+              const notificationCount = getLinkNotification(link);
               
               return (
                 <Link 
@@ -142,7 +171,7 @@ export function Sidebar() {
                   href={link.path}
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all",
+                    "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group relative",
                     isCollapsed ? "justify-center" : "",
                     isActive 
                       ? "bg-primary/10 text-primary hover:bg-primary/20" 
@@ -150,30 +179,49 @@ export function Sidebar() {
                   )}
                 >
                   <link.icon className={cn(
-                    "h-5 w-5",
+                    "h-5 w-5 transition-transform group-hover:scale-105",
                     isActive ? "text-primary" : "text-muted-foreground"
                   )} />
                   
                   {!isCollapsed && (
-                    <span className="text-sm font-medium truncate">
+                    <span className="text-sm font-medium truncate flex-1">
                       {link.label}
                     </span>
                   )}
 
-                  {!isCollapsed && link.notification && (
-                    <Badge className="ml-auto bg-primary/10 text-primary hover:bg-primary/20">
-                      {link.notification}
-                    </Badge>
+                  {notificationCount && (
+                    isCollapsed ? (
+                      <Badge 
+                        className={cn(
+                          "absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center",
+                          "bg-primary text-primary-foreground hover:bg-primary/90",
+                          "animate-in fade-in-50 duration-300"
+                        )}
+                      >
+                        {notificationCount}
+                      </Badge>
+                    ) : (
+                      <Badge 
+                        className={cn(
+                          "bg-primary/10 text-primary hover:bg-primary/20",
+                          "px-2 py-0.5 text-xs font-semibold",
+                          "animate-in fade-in-50 duration-300",
+                          "ml-auto"
+                        )}
+                      >
+                        {notificationCount}
+                      </Badge>
+                    )
                   )}
                 </Link>
               );
             })}
           </nav>
 
-          {/* Bottom actions with improved layout */}
+          {/* Bottom actions with improved layout and hover states */}
           <div className={cn(
-            "mt-auto border-t pt-4",
-            isCollapsed ? "flex justify-center" : "flex justify-between items-center"
+            "mt-auto pt-4 border-t border-border/50",
+            isCollapsed ? "flex justify-center" : "flex justify-between items-center gap-2"
           )}>
             <Theme />
             <Button
@@ -181,7 +229,10 @@ export function Sidebar() {
               size="icon"
               onClick={handleLogout}
               aria-label="Logout"
-              className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+              className={cn(
+                "text-muted-foreground hover:text-destructive hover:bg-destructive/10",
+                "transition-all duration-200 hover:scale-105"
+              )}
             >
               <LogOut className="h-5 w-5" />
               {!isCollapsed && <span className="sr-only">Logout</span>}

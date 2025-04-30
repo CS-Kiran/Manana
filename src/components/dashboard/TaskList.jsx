@@ -265,15 +265,17 @@ export default function TaskList({ tasks: initialTasks, onEdit, onDelete, onStat
 
           {/* Responsive filters - hidden on mobile unless expanded */}
           <div className={cn(
-            "flex gap-2 w-full md:w-auto",
+            "flex flex-col md:flex-row items-stretch gap-3 w-full md:w-auto",
             isFiltersExpanded ? "flex" : "hidden md:flex"
           )}>
-            <div className="relative w-full md:w-auto">
-              {getPriorityIcon(selectedPriority !== "all" ? selectedPriority : "medium")}
+            <div className="relative flex-1 md:flex-none">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                {getPriorityIcon(selectedPriority !== "all" ? selectedPriority : "medium")}
+              </div>
               <select
                 value={selectedPriority}
                 onChange={(e) => setSelectedPriority(e.target.value)}
-                className="appearance-none h-11 w-full md:w-40 rounded-md border bg-background/50 hover:bg-background px-8 py-2 text-sm transition-colors focus:outline-none focus:ring-1 focus:ring-primary"
+                className="h-11 w-full md:w-44 rounded-md border bg-background/50 hover:bg-background pl-9 pr-8 py-2 text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 aria-label="Filter by priority"
               >
                 <option value="all">All Priorities</option>
@@ -281,14 +283,17 @@ export default function TaskList({ tasks: initialTasks, onEdit, onDelete, onStat
                 <option value="medium">Medium Priority</option>
                 <option value="high">High Priority</option>
               </select>
-              <ChevronDown className="absolute right-3 top-3.5 h-4 w-4 text-muted-foreground pointer-events-none" />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none opacity-50" />
             </div>
 
-            <div className="relative w-full md:w-auto">
+            <div className="relative flex-1 md:flex-none">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                <Filter className="h-4 w-4 text-muted-foreground opacity-50" />
+              </div>
               <select
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="appearance-none h-11 w-full md:w-40 rounded-md border bg-background/50 hover:bg-background px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-1 focus:ring-primary"
+                className="h-11 w-full md:w-44 rounded-md border bg-background/50 hover:bg-background pl-9 pr-8 py-2 text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 aria-label="Filter by status"
               >
                 <option value="all">All Status</option>
@@ -296,7 +301,7 @@ export default function TaskList({ tasks: initialTasks, onEdit, onDelete, onStat
                 <option value="in-progress">In Progress</option>
                 <option value="completed">Completed</option>
               </select>
-              <ChevronDown className="absolute right-3 top-3.5 h-4 w-4 text-muted-foreground pointer-events-none" />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none opacity-50" />
             </div>
           </div>
         </div>
@@ -414,13 +419,24 @@ export default function TaskList({ tasks: initialTasks, onEdit, onDelete, onStat
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   className={cn(
-                    "p-4 mb-4 rounded-xl border transition-all",
-                    "bg-card/50 hover:bg-card/80 backdrop-blur-sm",
-                    "group hover:shadow-lg"
+                    "p-5 mb-4 rounded-xl border transition-all",
+                    "bg-card hover:bg-accent/5 backdrop-blur-sm",
+                    "group hover:shadow-md hover:border-accent/20",
+                    "relative overflow-hidden"
                   )}
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-3 flex-1">
+                  {/* Priority indicator strip */}
+                  <div 
+                    className={cn(
+                      "absolute left-0 top-0 bottom-0 w-1",
+                      task.priority === "high" ? "bg-red-500" : 
+                      task.priority === "medium" ? "bg-amber-500" : 
+                      "bg-green-500"
+                    )}
+                  />
+
+                  <div className="flex items-start justify-between gap-4 pl-3">
+                    <div className="flex items-start gap-4 flex-1 min-w-0">
                       <button
                         onClick={() =>
                           handleStatusChange(
@@ -429,31 +445,30 @@ export default function TaskList({ tasks: initialTasks, onEdit, onDelete, onStat
                           )
                         }
                         aria-label={task.status === "completed" ? "Mark as incomplete" : "Mark as complete"}
-                        className="mt-1 transition-transform hover:scale-110"
+                        className="mt-1 transition-transform hover:scale-110 flex-shrink-0"
                       >
                         {task.status === "completed" ? (
                           <CheckCircle2 className="h-5 w-5 text-green-500" />
                         ) : (
-                          <Circle className="h-5 w-5 text-muted-foreground" />
+                          <Circle className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />
                         )}
                       </button>
 
-                      <div className="space-y-2 flex-1">
-                        <div className="flex items-center gap-2">
+                      <div className="space-y-2.5 flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
                           <h3
                             className={cn(
-                              "font-medium text-base",
+                              "font-medium text-base truncate flex-1",
                               task.status === "completed" && "line-through text-muted-foreground"
                             )}
                           >
                             {task.title}
                           </h3>
                           
-                          {/* Priority badge */}
                           <Badge
                             variant="outline"
                             className={cn(
-                              "px-2 py-0.5 text-xs capitalize",
+                              "px-2.5 py-0.5 text-xs capitalize font-medium",
                               getPriorityColor(task.priority)
                             )}
                           >
@@ -462,51 +477,53 @@ export default function TaskList({ tasks: initialTasks, onEdit, onDelete, onStat
                         </div>
                         
                         {task.description && (
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-muted-foreground line-clamp-2">
                             {task.description}
                           </p>
                         )}
                         
-                        {task.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-2">
-                            {task.tags.map((tag) => (
-                              <Badge
-                                key={tag}
-                                variant="secondary"
-                                className="px-2 py-0.5 text-xs bg-primary/10 text-primary hover:bg-primary/20"
-                              >
-                                <Tag className="h-3 w-3 mr-1" />
-                                {tag}
-                              </Badge>
-                            ))}
-                          </div>
-                        )}
+                        <div className="flex flex-wrap items-center gap-3">
+                          {task.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5">
+                              {task.tags.map((tag) => (
+                                <Badge
+                                  key={tag}
+                                  variant="secondary"
+                                  className="px-2 py-0.5 text-xs bg-primary/5 text-primary hover:bg-primary/10 transition-colors"
+                                >
+                                  <Tag className="h-3 w-3 mr-1.5 flex-shrink-0" />
+                                  {tag}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                         
                         <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
                           {task.dueDate && (
-                            <span className="flex items-center gap-1">
-                              <Calendar className="h-3 w-3" />
+                            <span className="flex items-center gap-1.5 bg-background/50 px-2 py-1 rounded-md">
+                              <Calendar className="h-3 w-3 flex-shrink-0" />
                               {new Date(task.dueDate).toLocaleDateString()}
                               {new Date(task.dueDate) < new Date() && task.status !== "completed" && (
-                                <Badge variant="destructive" className="text-xs ml-1 py-0 px-1">Overdue</Badge>
+                                <Badge variant="destructive" className="text-[10px] h-4 px-1">Overdue</Badge>
                               )}
                             </span>
                           )}
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
+                          <span className="flex items-center gap-1.5 bg-background/50 px-2 py-1 rounded-md">
+                            <Clock className="h-3 w-3 flex-shrink-0" />
                             {formatDistanceToNow(new Date(task.createdAt), { addSuffix: true })}
                           </span>
                         </div>
                       </div>
                     </div>
                     
-                    {/* Actions with improved visibility */}
-                    <div className="flex sm:gap-2 gap-1">
+                    {/* Actions with improved visibility and feedback */}
+                    <div className="flex gap-1 sm:opacity-0 group-hover:opacity-100 transition-opacity focus-within:opacity-100">
                       <Button
                         variant="ghost"
                         size="icon"
                         aria-label="Edit task"
-                        className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 sm:opacity-0 sm:group-hover:opacity-100 transition-all"
+                        className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
                         onClick={() => handleEditTask(task._id)}
                       >
                         <Edit className="h-4 w-4" />
@@ -515,7 +532,7 @@ export default function TaskList({ tasks: initialTasks, onEdit, onDelete, onStat
                         variant="ghost"
                         size="icon"
                         aria-label="Delete task"
-                        className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 sm:opacity-0 sm:group-hover:opacity-100 transition-all"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                         onClick={() => handleDeleteTask(task._id)}
                       >
                         <Trash2 className="h-4 w-4" />
